@@ -12,3 +12,6 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+
+# NuGet
+packages/
