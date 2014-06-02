@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DepthInheritanceTree.cs" />
+    <Compile Include="EveryParameterDocumented.cs" />
     <Compile Include="OverridingMethodsCommented.cs" />
     <Compile Include="StatementIndentation.cs" />
     <Compile Include="IfKeywordFollowedBySpace.cs" />
