@@ -92,6 +92,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DepthInheritanceTree.cs" />
     <Compile Include="StatementIndentation.cs" />
     <Compile Include="IfKeywordFollowedBySpace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
