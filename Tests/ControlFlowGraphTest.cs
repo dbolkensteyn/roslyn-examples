@@ -24,6 +24,17 @@ namespace Tests
         }
 
         [TestMethod]
+        public void ReturnStatement()
+        {
+            SyntaxNode node = ParseStatement("return foo;");
+
+            ControlFlowGraph cfg = ControlFlowGraph.Create(node);
+
+            Assert.AreEqual(1, cfg.BasicBlocks.Count);
+            Assert.AreEqual(1, cfg.BasicBlocks[0].Statements.Count);
+        }
+
+        [TestMethod]
         public void Block()
         {
             SyntaxNode node = ParseStatement("{ a = 0; a = 0; }");

@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Immutable;
 
 namespace Diagnostics
 {
@@ -26,6 +27,12 @@ namespace Diagnostics
 
         private class ControlFlowGraphBuilder : SyntaxWalker
         {
+            private ImmutableHashSet<SyntaxKind> supportedKinds = new SyntaxKind[]
+            {
+                SyntaxKind.SimpleAssignmentExpression,
+                SyntaxKind.ReturnStatement
+            }.ToImmutableHashSet();
+
             private ControlFlowBasicBlock currentBasicBlock = new ControlFlowBasicBlock();
             private IList<ControlFlowBasicBlock> basicBlocks = new List<ControlFlowBasicBlock>();
 
@@ -40,10 +47,11 @@ namespace Diagnostics
 
             public override void Visit(SyntaxNode node)
             {
-                if (node.IsKind(SyntaxKind.SimpleAssignmentExpression))
+                if (supportedKinds.Contains(node.CSharpKind()))
                 {
                     currentBasicBlock.Statements.Add(node);
-                } else if (node.IsKind(SyntaxKind.IfStatement))
+                }
+                else if (node.IsKind(SyntaxKind.IfStatement))
                 {
                     IfStatementSyntax ifNode = (IfStatementSyntax)node;
 
@@ -56,7 +64,8 @@ namespace Diagnostics
 
                     ControlFlowBasicBlock afterIfBasicBlock = new ControlFlowBasicBlock();
                     SetCurrentBasicBlock(afterIfBasicBlock);
-                } else
+                }
+                else
                 {
                     base.Visit(node);
                 }
