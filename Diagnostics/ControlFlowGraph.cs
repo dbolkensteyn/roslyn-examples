@@ -14,10 +14,10 @@ namespace Diagnostics
     {
         private ControlFlowGraph(IList<ControlFlowBasicBlock> basicBlocks)
         {
-            this.BasicBlocks = basicBlocks;
+            BasicBlocks = basicBlocks;
         }
 
-        public IList<ControlFlowBasicBlock> BasicBlocks;
+        public IList<ControlFlowBasicBlock> BasicBlocks { get; private set; }
 
         public static ControlFlowGraph Create(SyntaxNode node)
         {
@@ -32,6 +32,9 @@ namespace Diagnostics
             public ControlFlowGraph Build(SyntaxNode node)
             {
                 Visit(node);
+
+                basicBlocks.Add(currentBasicBlock);
+
                 return new ControlFlowGraph(basicBlocks);
             }
 
@@ -40,9 +43,29 @@ namespace Diagnostics
                 if (node.IsKind(SyntaxKind.SimpleAssignmentExpression))
                 {
                     currentBasicBlock.Statements.Add(node);
-                }
+                } else if (node.IsKind(SyntaxKind.IfStatement))
+                {
+                    IfStatementSyntax ifNode = (IfStatementSyntax)node;
 
-                base.Visit(node);
+                    ControlFlowBasicBlock conditionBasicBlock = currentBasicBlock;
+                    base.Visit(ifNode.Condition);
+
+                    ControlFlowBasicBlock ifTrueBasicBlock = new ControlFlowBasicBlock();
+                    SetCurrentBasicBlock(ifTrueBasicBlock);
+                    base.Visit(ifNode.Statement);
+
+                    ControlFlowBasicBlock afterIfBasicBlock = new ControlFlowBasicBlock();
+                    SetCurrentBasicBlock(afterIfBasicBlock);
+                } else
+                {
+                    base.Visit(node);
+                }
+            }
+
+            private void SetCurrentBasicBlock(ControlFlowBasicBlock newCurrentBasicBlock)
+            {
+                basicBlocks.Add(currentBasicBlock);
+                currentBasicBlock = newCurrentBasicBlock;
             }
         }
     }

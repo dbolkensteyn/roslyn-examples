@@ -9,10 +9,16 @@ namespace Diagnostics
 {
     public class ControlFlowBasicBlock
     {
-        public IList<SyntaxNode> Statements;
+        public ControlFlowBasicBlock()
+        {
+            Statements = new List<SyntaxNode>();
+            Successors = new List<ControlFlowGraph>();
+        }
+
+        public IList<SyntaxNode> Statements { get; private set; }
 
         public SyntaxNode Terminator;
 
-        public IList<ControlFlowGraph> Successors;
+        public IList<ControlFlowGraph> Successors { get; private set; }
     }
 }
