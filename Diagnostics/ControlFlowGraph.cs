@@ -30,7 +30,9 @@ namespace Diagnostics
             private ImmutableHashSet<SyntaxKind> supportedKinds = new SyntaxKind[]
             {
                 SyntaxKind.SimpleAssignmentExpression,
-                SyntaxKind.ReturnStatement
+                SyntaxKind.ReturnStatement,
+                SyntaxKind.EqualsExpression,
+                SyntaxKind.NotEqualsExpression
             }.ToImmutableHashSet();
 
             private ControlFlowBasicBlock currentBasicBlock = new ControlFlowBasicBlock();
@@ -47,6 +49,7 @@ namespace Diagnostics
 
             public override void Visit(SyntaxNode node)
             {
+                Console.WriteLine("visiting : " + node);
                 if (supportedKinds.Contains(node.CSharpKind()))
                 {
                     currentBasicBlock.Statements.Add(node);
@@ -57,11 +60,11 @@ namespace Diagnostics
 
                     ControlFlowBasicBlock conditionBasicBlock = currentBasicBlock;
                     conditionBasicBlock.Terminator = ifNode;
-                    base.Visit(ifNode.Condition);
+                    Visit(ifNode.Condition);
 
                     ControlFlowBasicBlock ifTrueBasicBlock = new ControlFlowBasicBlock();
                     SetCurrentBasicBlock(ifTrueBasicBlock);
-                    base.Visit(ifNode.Statement);
+                    Visit(ifNode.Statement);
 
                     ControlFlowBasicBlock afterIfBasicBlock = new ControlFlowBasicBlock();
                     SetCurrentBasicBlock(afterIfBasicBlock);

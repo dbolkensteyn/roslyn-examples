@@ -35,6 +35,26 @@ namespace Tests
         }
 
         [TestMethod]
+        public void EqualityExpression()
+        {
+            SyntaxNode node = ParseStatement("{ if (a == 0); }");
+
+            ControlFlowGraph cfg = ControlFlowGraph.Create(node);
+
+            Assert.AreEqual(SyntaxKind.EqualsExpression, cfg.BasicBlocks[0].Statements[0].CSharpKind());
+        }
+
+        [TestMethod]
+        public void NotEqualsExpression()
+        {
+            SyntaxNode node = ParseStatement("{ if (a != 0); }");
+
+            ControlFlowGraph cfg = ControlFlowGraph.Create(node);
+
+            Assert.AreEqual(SyntaxKind.NotEqualsExpression, cfg.BasicBlocks[0].Statements[0].CSharpKind());
+        }
+
+        [TestMethod]
         public void Block()
         {
             SyntaxNode node = ParseStatement("{ a = 0; a = 0; }");
