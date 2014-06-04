@@ -12,13 +12,13 @@ namespace Diagnostics
         public ControlFlowBasicBlock()
         {
             Statements = new List<SyntaxNode>();
-            Successors = new List<ControlFlowGraph>();
+            Successors = new List<ControlFlowBasicBlock>();
         }
 
         public IList<SyntaxNode> Statements { get; private set; }
 
         public SyntaxNode Terminator;
 
-        public IList<ControlFlowGraph> Successors { get; private set; }
+        public IList<ControlFlowBasicBlock> Successors { get; private set; }
     }
 }

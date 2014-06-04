@@ -53,7 +53,13 @@ namespace Tests
             ControlFlowGraph cfg = ControlFlowGraph.Create(node);
 
             Assert.AreEqual(3, cfg.BasicBlocks.Count);
+
+            Assert.AreEqual(node.DescendantNodes().OfType<IfStatementSyntax>().Single(), cfg.BasicBlocks[0].Terminator);
             Assert.AreEqual(0, cfg.BasicBlocks[0].Statements.Count);
+            Assert.AreEqual(2, cfg.BasicBlocks[0].Successors.Count);
+            Assert.AreEqual(cfg.BasicBlocks[1], cfg.BasicBlocks[0].Successors[0]);
+            Assert.AreEqual(cfg.BasicBlocks[2], cfg.BasicBlocks[0].Successors[1]);
+
             Assert.AreEqual(2, cfg.BasicBlocks[1].Statements.Count);
             Assert.AreEqual(1, cfg.BasicBlocks[2].Statements.Count);
         }

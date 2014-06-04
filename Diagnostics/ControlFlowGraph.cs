@@ -56,6 +56,7 @@ namespace Diagnostics
                     IfStatementSyntax ifNode = (IfStatementSyntax)node;
 
                     ControlFlowBasicBlock conditionBasicBlock = currentBasicBlock;
+                    conditionBasicBlock.Terminator = ifNode;
                     base.Visit(ifNode.Condition);
 
                     ControlFlowBasicBlock ifTrueBasicBlock = new ControlFlowBasicBlock();
@@ -64,6 +65,9 @@ namespace Diagnostics
 
                     ControlFlowBasicBlock afterIfBasicBlock = new ControlFlowBasicBlock();
                     SetCurrentBasicBlock(afterIfBasicBlock);
+
+                    conditionBasicBlock.Successors.Add(ifTrueBasicBlock);
+                    conditionBasicBlock.Successors.Add(afterIfBasicBlock);
                 }
                 else
                 {
