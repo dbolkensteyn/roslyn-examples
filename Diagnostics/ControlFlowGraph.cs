@@ -62,7 +62,7 @@ namespace Diagnostics
         {
             const int max = 15;
 
-            String text = statement.GetText().ToString();
+            String text = statement.GetText().ToString().Replace("\"", "\\\"");
             String result = text.Length > max ? text.Substring(0, max - 3) + "..." : text;
             return " " + result + " ";
         }

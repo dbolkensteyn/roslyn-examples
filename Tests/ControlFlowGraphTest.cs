@@ -90,7 +90,7 @@ namespace Tests
         [TestMethod]
         public void PrintGraph()
         {
-            SyntaxNode node = ParseStatement("{ if (false) { a = 0; b = 0; } c = 0; }");
+            SyntaxNode node = ParseStatement("{ if (a == null) { return a; } return \"\"; }");
 
             ControlFlowGraph cfg = ControlFlowGraph.Create(node);
             // FIXME Hardcoded path
