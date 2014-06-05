@@ -102,6 +102,7 @@
     <Compile Include="ControlFlowGraph.cs" />
     <Compile Include="DepthInheritanceTree.cs" />
     <Compile Include="EveryParameterDocumented.cs" />
+    <Compile Include="MethodsReturningNull.cs" />
     <Compile Include="OverridingMethodsCommented.cs" />
     <Compile Include="StatementIndentation.cs" />
     <Compile Include="IfKeywordFollowedBySpace.cs" />
