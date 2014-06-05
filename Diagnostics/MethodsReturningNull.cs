@@ -67,7 +67,64 @@ namespace Diagnostics
                     {
                         addDiagnostic(Diagnostic.Create(Rule, statement.GetLocation()));
                     }
+
+                    // End of control flow
+                    return;
                 }
+                else if (node.IsKind(SyntaxKind.EqualsExpression) || node.IsKind(SyntaxKind.NotEqualsExpression))
+                {
+                    BinaryExpressionSyntax statement = (BinaryExpressionSyntax)node;
+
+                    ISymbol target = null;
+                    bool isLeftNull = IsNull(statement.Left, nulls, semanticModel);
+                    bool isRightNull = IsNull(statement.Right, nulls, semanticModel);
+                    if (!isLeftNull && isRightNull)
+                    {
+                        target = semanticModel.GetSymbolInfo(statement.Left).Symbol;
+                    }
+                    else if (isLeftNull && !isRightNull)
+                    {
+                        target = semanticModel.GetSymbolInfo(statement.Right).Symbol;
+                    }
+
+                    if (target == null)
+                    {
+                        // nothing new was learnt, check both successors using the same state
+                        Check(basicBlock.Successors[0], nulls, semanticModel, addDiagnostic);
+                        Check(basicBlock.Successors[1], nulls, semanticModel, addDiagnostic);
+                    }
+                    else
+                    {
+                        // we're able to learn something new
+                        HashSet<ISymbol> leftNulls = new HashSet<ISymbol>(nulls);
+                        if (statement.IsKind(SyntaxKind.EqualsExpression))
+                        {
+                            leftNulls.Add(target);
+                        }
+                        else
+                        {
+                            leftNulls.Remove(target);
+                        }
+
+                        HashSet<ISymbol> rightNulls = new HashSet<ISymbol>(nulls);
+                        if (statement.IsKind(SyntaxKind.EqualsExpression))
+                        {
+                            rightNulls.Remove(target);
+                        }
+                        else
+                        {
+                            rightNulls.Add(target);
+                        }
+
+                        Check(basicBlock.Successors[0], leftNulls, semanticModel, addDiagnostic);
+                        Check(basicBlock.Successors[1], rightNulls, semanticModel, addDiagnostic);
+                    }
+                }
+            }
+
+            if (basicBlock.Successors.Count == 1)
+            {
+                Check(basicBlock.Successors[0], nulls, semanticModel, addDiagnostic);
             }
         }
 
