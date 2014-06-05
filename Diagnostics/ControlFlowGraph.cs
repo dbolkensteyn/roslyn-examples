@@ -49,7 +49,6 @@ namespace Diagnostics
 
             public override void Visit(SyntaxNode node)
             {
-                Console.WriteLine("visiting : " + node);
                 if (supportedKinds.Contains(node.CSharpKind()))
                 {
                     currentBasicBlock.Statements.Add(node);
