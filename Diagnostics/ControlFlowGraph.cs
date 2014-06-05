@@ -20,6 +20,53 @@ namespace Diagnostics
 
         public IList<ControlFlowBasicBlock> BasicBlocks { get; private set; }
 
+        public String ToGraph()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("digraph finite_state_machine {");
+            sb.AppendLine("  rankdir=TB;");
+
+            foreach (ControlFlowBasicBlock basicBlock in BasicBlocks)
+            {
+                sb.AppendLine("  node [shape = circle, label = \"" + Statements(basicBlock.Statements) + "\"]; B" + BasicBlocks.IndexOf(basicBlock) + ";");
+            }
+
+            foreach (ControlFlowBasicBlock predecessor in BasicBlocks)
+            {
+                foreach (ControlFlowBasicBlock successor in predecessor.Successors)
+                {
+                    String cause = predecessor.Terminator == null ? "" : Statement(predecessor.Terminator);
+                    sb.AppendLine(" B" + BasicBlocks.IndexOf(predecessor) + " -> B" + BasicBlocks.IndexOf(successor) + " [label = \"" + cause + "\"]");
+                }
+            }
+
+            sb.AppendLine("}");
+
+            return sb.ToString();
+        }
+
+        private static String Statements(IList<SyntaxNode> statements)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (SyntaxNode statement in statements)
+            {
+                sb.AppendLine(Statement(statement));
+            }
+
+            return sb.ToString();
+        }
+
+        private static String Statement(SyntaxNode statement)
+        {
+            const int max = 15;
+
+            String text = statement.GetText().ToString();
+            String result = text.Length > max ? text.Substring(0, max - 3) + "..." : text;
+            return " " + result + " ";
+        }
+
         public static ControlFlowGraph Create(SyntaxNode node)
         {
             return new ControlFlowGraphBuilder().Build(node);
@@ -58,14 +105,16 @@ namespace Diagnostics
                     IfStatementSyntax ifNode = (IfStatementSyntax)node;
 
                     ControlFlowBasicBlock conditionBasicBlock = currentBasicBlock;
+                    ControlFlowBasicBlock ifTrueBasicBlock = new ControlFlowBasicBlock();
+                    ControlFlowBasicBlock afterIfBasicBlock = new ControlFlowBasicBlock();
+
                     conditionBasicBlock.Terminator = ifNode;
                     Visit(ifNode.Condition);
 
-                    ControlFlowBasicBlock ifTrueBasicBlock = new ControlFlowBasicBlock();
+                    ifTrueBasicBlock.Successors.Add(afterIfBasicBlock);
                     SetCurrentBasicBlock(ifTrueBasicBlock);
                     Visit(ifNode.Statement);
 
-                    ControlFlowBasicBlock afterIfBasicBlock = new ControlFlowBasicBlock();
                     SetCurrentBasicBlock(afterIfBasicBlock);
 
                     conditionBasicBlock.Successors.Add(ifTrueBasicBlock);

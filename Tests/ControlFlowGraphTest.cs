@@ -5,6 +5,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using System.IO;
+
 using Diagnostics;
 
 namespace Tests
@@ -71,6 +73,7 @@ namespace Tests
             SyntaxNode node = ParseStatement("{ if (false) { a = 0; b = 0; } c = 0; }");
 
             ControlFlowGraph cfg = ControlFlowGraph.Create(node);
+            Console.WriteLine(cfg.ToGraph());
 
             Assert.AreEqual(3, cfg.BasicBlocks.Count);
 
@@ -82,6 +85,15 @@ namespace Tests
 
             Assert.AreEqual(2, cfg.BasicBlocks[1].Statements.Count);
             Assert.AreEqual(1, cfg.BasicBlocks[2].Statements.Count);
+        }
+
+        [TestMethod]
+        public void PrintGraph()
+        {
+            SyntaxNode node = ParseStatement("{ if (false) { a = 0; b = 0; } c = 0; }");
+
+            ControlFlowGraph cfg = ControlFlowGraph.Create(node);
+            File.WriteAllText(@"C:\Users\vagrant\Desktop\cfg.dot", cfg.ToGraph());
         }
 
         private SyntaxNode ParseStatement(String statement)
