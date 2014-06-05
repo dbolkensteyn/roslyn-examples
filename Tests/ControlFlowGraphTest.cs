@@ -93,6 +93,7 @@ namespace Tests
             SyntaxNode node = ParseStatement("{ if (false) { a = 0; b = 0; } c = 0; }");
 
             ControlFlowGraph cfg = ControlFlowGraph.Create(node);
+            // FIXME Hardcoded path
             File.WriteAllText(@"C:\Users\vagrant\Desktop\cfg.dot", cfg.ToGraph());
         }
 
