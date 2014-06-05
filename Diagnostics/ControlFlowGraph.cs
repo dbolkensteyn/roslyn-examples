@@ -34,10 +34,24 @@ namespace Diagnostics
 
             foreach (ControlFlowBasicBlock predecessor in BasicBlocks)
             {
+                bool isFirst = true;
                 foreach (ControlFlowBasicBlock successor in predecessor.Successors)
                 {
-                    String cause = predecessor.Terminator == null ? "" : Statement(predecessor.Terminator);
+                    String cause;
+                    if (predecessor.Terminator != null)
+                    {
+                        cause = Statement(predecessor.Terminator);
+                        cause += Environment.NewLine;
+                        cause += " " + isFirst;
+                    }
+                    else
+                    {
+                        cause = "";
+                    }
+
                     sb.AppendLine(" B" + BasicBlocks.IndexOf(predecessor) + " -> B" + BasicBlocks.IndexOf(successor) + " [label = \"" + cause + "\"]");
+
+                    isFirst = false;
                 }
             }
 
