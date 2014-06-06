@@ -104,6 +104,7 @@
     <Compile Include="EveryParameterDocumented.cs" />
     <Compile Include="MethodsReturningNull.cs" />
     <Compile Include="OverridingMethodsCommented.cs" />
+    <Compile Include="CodeFixProvider.cs" />
     <Compile Include="StatementIndentation.cs" />
     <Compile Include="IfKeywordFollowedBySpace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
