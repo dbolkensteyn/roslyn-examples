@@ -110,33 +110,37 @@ namespace Diagnostics
 
             public override void Visit(SyntaxNode node)
             {
-                if (supportedKinds.Contains(node.CSharpKind()))
+                // FIXME How comes a node can be null here?
+                if (node != null)
                 {
-                    currentBasicBlock.Statements.Add(node);
-                }
-                else if (node.IsKind(SyntaxKind.IfStatement))
-                {
-                    IfStatementSyntax ifNode = (IfStatementSyntax)node;
+                    if (supportedKinds.Contains(node.CSharpKind()))
+                    {
+                        currentBasicBlock.Statements.Add(node);
+                    }
+                    else if (node.IsKind(SyntaxKind.IfStatement))
+                    {
+                        IfStatementSyntax ifNode = (IfStatementSyntax)node;
 
-                    ControlFlowBasicBlock conditionBasicBlock = currentBasicBlock;
-                    ControlFlowBasicBlock ifTrueBasicBlock = new ControlFlowBasicBlock();
-                    ControlFlowBasicBlock afterIfBasicBlock = new ControlFlowBasicBlock();
+                        ControlFlowBasicBlock conditionBasicBlock = currentBasicBlock;
+                        ControlFlowBasicBlock ifTrueBasicBlock = new ControlFlowBasicBlock();
+                        ControlFlowBasicBlock afterIfBasicBlock = new ControlFlowBasicBlock();
 
-                    conditionBasicBlock.Terminator = ifNode;
-                    Visit(ifNode.Condition);
+                        conditionBasicBlock.Terminator = ifNode;
+                        Visit(ifNode.Condition);
 
-                    ifTrueBasicBlock.Successors.Add(afterIfBasicBlock);
-                    SetCurrentBasicBlock(ifTrueBasicBlock);
-                    Visit(ifNode.Statement);
+                        ifTrueBasicBlock.Successors.Add(afterIfBasicBlock);
+                        SetCurrentBasicBlock(ifTrueBasicBlock);
+                        Visit(ifNode.Statement);
 
-                    SetCurrentBasicBlock(afterIfBasicBlock);
+                        SetCurrentBasicBlock(afterIfBasicBlock);
 
-                    conditionBasicBlock.Successors.Add(ifTrueBasicBlock);
-                    conditionBasicBlock.Successors.Add(afterIfBasicBlock);
-                }
-                else
-                {
-                    base.Visit(node);
+                        conditionBasicBlock.Successors.Add(ifTrueBasicBlock);
+                        conditionBasicBlock.Successors.Add(afterIfBasicBlock);
+                    }
+                    else
+                    {
+                        base.Visit(node);
+                    }
                 }
             }
 
